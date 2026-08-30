@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Roast &amp; Co. — Specialty Coffee Roastery{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="/" class="brand">
+                <span class="brand-name">Roast &amp; Co.</span>
+                <span class="brand-tag">Specialty Roastery</span>
+            </a>
+        </div>
+        <div class="nav-right">
+            {% if current_user.is_authenticated %}
+                <span class="user-pill">{{ current_user.email }}</span>
+                {% if current_user.get_id().startswith('a_') %}
+                    <a href="{{ url_for('admin.dashboard') }}" class="nav-link">Dashboard</a>
+                    <a href="{{ url_for('admin.users') }}" class="nav-link">Users</a>
+                    <a href="{{ url_for('admin.documents') }}" class="nav-link">Documents</a>
+                    <a href="{{ url_for('admin.admin_logout') }}" class="nav-link nav-btn-outline">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('chat.chat_index') }}" class="nav-link">Chat</a>
+                    <a href="{{ url_for('orders.get_orders') }}" class="nav-link">Orders</a>
+                    <a href="{{ url_for('auth.logout') }}" class="nav-link nav-btn-outline">Logout</a>
+                {% endif %}
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="nav-link">Sign In</a>
+                <a href="{{ url_for('auth.register') }}" class="nav-link nav-btn-primary">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    {% block content %}{% endblock %}
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

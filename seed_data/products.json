@@ -1,0 +1,7 @@
+[
+  {"sku": "ETHIOP-YRGA-12", "name": "Ethiopian Yirgacheffe", "weight": "12oz", "price": 18.50, "description": "Bright and floral with notes of bergamot, lemon, and jasmine. Washed process from the Gedeo zone.", "roast": "Light"},
+  {"sku": "COLOM-HUILA-12", "name": "Colombian Huila", "weight": "12oz", "price": 16.00, "description": "Smooth and balanced with caramel sweetness, red apple, and a milk chocolate finish.", "roast": "Medium"},
+  {"sku": "GUATE-ANTI-12", "name": "Guatemala Antigua", "weight": "12oz", "price": 17.50, "description": "Rich and velvety. Dark cocoa, brown sugar, and a hint of spice from volcanic soil-grown beans.", "roast": "Medium-Dark"},
+  {"sku": "BLEND-HOUSE-12", "name": "House Blend", "weight": "12oz", "price": 14.00, "description": "Our everyday blend: a crowd-pleasing mix of Brazilian and Colombian beans. Nutty, chocolatey, smooth.", "roast": "Medium"},
+  {"sku": "BLEND-DARK-12", "name": "Dark Roast Blend", "weight": "12oz", "price": 14.50, "description": "Bold and smoky with bittersweet chocolate and roasted walnut. For those who like it strong.", "roast": "Dark"}
+]

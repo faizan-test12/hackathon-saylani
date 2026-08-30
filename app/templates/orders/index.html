@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Orders — Roast &amp; Co.{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <header class="admin-header">
+        <div>
+            <h1>Your Roast &amp; Co. Orders</h1>
+            <p class="subtitle">View order history, shipment status, and tracked packages</p>
+        </div>
+        <div>
+            <a href="{{ url_for('chat.chat_index') }}" class="btn btn-primary">Open Chat Concierge</a>
+        </div>
+    </header>
+
+    <div class="card">
+        {% if orders %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Placed Date</th>
+                    <th>Items</th>
+                    <th>Shipping Address</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td><strong>#{{ order.id }}</strong></td>
+                    <td>{{ order.created_at.strftime('%b %d, %Y %H:%M') if order.created_at else '—' }}</td>
+                    <td>
+                        <ul style="list-style: none; padding-left: 0; margin: 0;">
+                        {% for item in order.items %}
+                            <li>{{ item.qty }}x {{ item.name }} <span style="color: var(--text-subtle); font-size: 0.82em;">(${{ "%.2f"|format(item.price) }})</span></li>
+                        {% endfor %}
+                        </ul>
+                    </td>
+                    <td style="max-width: 260px;">{{ order.address }}</td>
+                    <td>
+                        {% if order.status == 'placed' %}
+                            <span class="role-badge" style="background: var(--accent-terracotta);">Placed</span>
+                        {% elif order.status == 'shipped' %}
+                            <span class="role-badge" style="background: var(--accent-olive);">Shipped</span>
+                        {% elif order.status == 'delivered' %}
+                            <span class="role-badge" style="background: #2D5A27;">Delivered</span>
+                        {% elif order.status == 'cancelled' %}
+                            <span class="role-badge" style="background: #8C2524;">Cancelled</span>
+                        {% else %}
+                            <span class="role-badge">{{ order.status }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="sidebar-empty">
+            <p>No orders placed yet.</p>
+            <small>Chat with our AI assistant to order freshly roasted coffee beans!</small>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

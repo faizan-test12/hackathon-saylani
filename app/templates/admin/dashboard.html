@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}Roastery Observability &amp; Analytics — Roast &amp; Co.{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <header class="admin-header">
+        <div>
+            <h1>Roastery Intelligence &amp; Cost Dashboard</h1>
+            <p class="subtitle">Real-time token usage, Gemini API costs, and conversational audit logs</p>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('admin.documents') }}" class="btn btn-secondary">Manage Documents &amp; Vectors</a>
+            <a href="{{ url_for('admin.users') }}" class="btn btn-primary">Audit Customer Chats</a>
+        </div>
+    </header>
+
+    <div class="stats-cards">
+        <div class="stat-card">
+            <div class="label">Total Messages Logged</div>
+            <div class="value">{{ total_messages }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Cumulative Tokens</div>
+            <div class="value">{{ "{:,}".format(total_tokens) }}</div>
+        </div>
+        <div class="stat-card accent-card">
+            <div class="label">Estimated API Cost</div>
+            <div class="value">${{ "%.4f"|format(total_cost) }}</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Token Consumption by Customer</h2>
+        <div style="height: 320px; position: relative; margin-top: 1rem;">
+            <canvas id="usageChart"></canvas>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Customer Usage Breakdown</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Customer Email</th>
+                    <th>Conversations</th>
+                    <th>Tokens Consumed</th>
+                    <th>Write-Time Cost (USD)</th>
+                    <th>Audit Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in per_user_stats %}
+                <tr>
+                    <td><strong>{{ stat.email }}</strong></td>
+                    <td>{{ stat.message_count }} msgs</td>
+                    <td>{{ "{:,}".format(stat.total_tokens) }}</td>
+                    <td>${{ "%.4f"|format(stat.total_cost) }}</td>
+                    <td>
+                        <a href="{{ url_for('admin.user_chats', user_id=stat.user_id) }}" class="btn btn-sm btn-secondary">
+                            View Customer Chats &rarr;
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center; color: var(--text-muted);">No customer usage recorded yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Recent Conversations Audit</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Chat Title</th>
+                    <th>Customer</th>
+                    <th>Message Count</th>
+                    <th>Total Tokens</th>
+                    <th>Cost</th>
+                    <th>Inspection</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in per_chat_stats %}
+                <tr>
+                    <td><strong>{{ stat.chat_title }}</strong></td>
+                    <td>{{ stat.user_email }}</td>
+                    <td>{{ stat.message_count }}</td>
+                    <td>{{ "{:,}".format(stat.total_tokens) }}</td>
+                    <td>${{ "%.4f"|format(stat.total_cost) }}</td>
+                    <td>
+                        <a href="{{ url_for('admin.chat_view', chat_id=stat.chat_id) }}" class="btn btn-sm btn-primary">
+                            Inspect Full History
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center; color: var(--text-muted);">No chat sessions recorded yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const userData = {{ per_user_stats | tojson }};
+    const ctx = document.getElementById('usageChart').getContext('2d');
+    
+    const labels = userData.map(d => d.email.split('@')[0] + '@...');
+    const data = userData.map(d => d.total_tokens);
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Tokens Used',
+                data: data,
+                backgroundColor: 'rgba(193, 101, 47, 0.85)',
+                borderColor: '#C1652F',
+                borderWidth: 1.5,
+                borderRadius: 6,
+                hoverBackgroundColor: '#A75222'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: '#241710',
+                    titleFont: { family: "'Space Grotesk', sans-serif" },
+                    bodyFont: { family: "'Space Grotesk', sans-serif" },
+                    padding: 10,
+                    cornerRadius: 6
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(223, 211, 195, 0.5)'
+                    },
+                    ticks: {
+                        font: { family: "'Space Grotesk', sans-serif" },
+                        color: '#726257'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        font: { family: "'Space Grotesk', sans-serif" },
+                        color: '#726257'
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

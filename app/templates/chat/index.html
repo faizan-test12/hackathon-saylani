@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Barista Assistant — Roast &amp; Co.{% endblock %}
+
+{% block content %}
+<div class="chat-container" id="chatContainer">
+    <!-- Fixed Sidebar -->
+    <aside class="chat-sidebar" id="chatSidebar">
+        <div class="sidebar-header">
+            <button class="btn-new-chat" id="newChatBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>New Conversation</span>
+            </button>
+        </div>
+        <div class="chat-list" id="chatList">
+            {% for chat in chats %}
+                <div class="chat-item {% if loop.first %}active{% endif %}" data-chat-id="{{ chat.id }}">
+                    <div class="chat-item-content">
+                        <span class="chat-item-title" title="{{ chat.title }}">{{ chat.title }}</span>
+                        <span class="chat-item-time">{{ chat.updated_at.strftime('%b %d') if chat.updated_at else 'Just now' }}</span>
+                    </div>
+                    <button class="chat-item-delete" data-chat-id="{{ chat.id }}" title="Delete conversation" aria-label="Delete chat">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                </div>
+            {% else %}
+                <div class="sidebar-empty">
+                    <p>No conversations yet</p>
+                    <small>Start a chat to explore our coffees or ask brewing questions</small>
+                </div>
+            {% endfor %}
+        </div>
+    </aside>
+
+    <!-- Main Chat Pane -->
+    <main class="chat-main" id="chatMain">
+        <header class="chat-topbar" id="chatTopbar">
+            <div class="chat-topbar-left">
+                <button id="toggleSidebarBtn" class="btn-toggle-sidebar" title="Toggle Sidebar" aria-label="Toggle Sidebar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="9" y1="3" x2="9" y2="21"></line>
+                    </svg>
+                </button>
+                <div class="chat-topbar-info">
+                    <h2 class="active-chat-title" id="activeChatTitle">Roastery Assistant</h2>
+                    <span class="chat-status-badge"><span class="status-dot"></span> Live Concierge</span>
+                </div>
+            </div>
+            <div class="chat-topbar-meta">
+                <span class="catalog-hint">Specialty Support &amp; Direct Ordering</span>
+            </div>
+        </header>
+
+        <!-- Scrollable Messages Area -->
+        <div class="chat-messages" id="messagesArea">
+            {% if not chats %}
+            <div class="chat-empty-state" id="emptyState">
+                <div class="empty-state-card">
+                    <h2>Welcome to Roast &amp; Co.</h2>
+                    <p>I can assist you with answering FAQ questions about our roasts, shipping, and returns via grounded knowledge base, or place, track, and cancel orders directly in this conversation.</p>
+                    <div class="suggestion-chips">
+                        <button class="chip" onclick="quickPrompt('What single-origin coffees do you have?')">What single-origin coffees do you have?</button>
+                        <button class="chip" onclick="quickPrompt('How long does standard shipping take?')">How long does standard shipping take?</button>
+                        <button class="chip" onclick="quickPrompt('What is your return policy for whole bean coffee?')">What is your return policy?</button>
+                        <button class="chip" onclick="quickPrompt('What grind size do you recommend for pour-over?')">Pour-over brew recommendations</button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator-container" id="typingIndicatorContainer" style="display: none;">
+            <div class="typing-indicator" id="typingIndicator">
+                <span class="typing-author">Roast &amp; Co.</span>
+                <div class="typing-dots">
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fixed Bottom Input Container -->
+        <div class="chat-input-container" id="chatInputContainer">
+            <div class="chat-input-area" id="inputArea">
+                <textarea id="messageInput" placeholder="Ask about our roasts, brewing guides, shipping, or orders..." rows="1"></textarea>
+                <button id="sendBtn" class="send-btn" title="Send message" aria-label="Send message">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+            <div class="chat-footnote">
+                <span>Grounded FAQ via local RAG &bull; Order actions are user-scoped</span>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+{% endblock %}

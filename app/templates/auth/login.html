@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign In — Roast &amp; Co.{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Welcome Back</h2>
+        <p class="subtitle">Sign in to your Roast &amp; Co. account</p>
+        
+        <form method="POST" action="{{ url_for('auth.login') }}" style="margin-top: 1.5rem;">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="maria@example.com" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+        </form>
+        
+        <div class="auth-footer">
+            <p>New to Roast &amp; Co.? <a href="{{ url_for('auth.register') }}">Create an account</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}View Chat - Roast & Co.{% endblock %}
+
+{% block content %}
+<div class="admin-chat-view">
+    <header class="admin-header">
+        <h1>Chat: {{ chat.title }}</h1>
+        <p class="subtitle">User: {{ user_email }}</p>
+        <a href="{{ url_for('admin.user_chats', user_id=chat.user_id) }}" class="btn-link">Back to User Chats</a>
+    </header>
+
+    <div class="chat-main read-only mt-4">
+        <div class="messages-area">
+            {% for msg in messages %}
+            <div class="message {{ msg.role }}">
+                <div class="message-header">
+                    <span class="role-badge">{{ msg.role|capitalize }}</span>
+                    <span class="timestamp">{{ msg.created_at.strftime('%H:%M:%S') }}</span>
+                    {% if msg.prompt_tokens or msg.completion_tokens %}
+                    <span class="token-usage">Tokens: {{ msg.prompt_tokens + msg.completion_tokens }}</span>
+                    {% endif %}
+                </div>
+                <div class="message-content">
+                    {{ msg.content }}
+                </div>
+                {% if msg.tool_calls %}
+                <details class="tool-calls">
+                    <summary>Tool Calls</summary>
+                    <pre><code>{{ msg.tool_calls }}</code></pre>
+                </details>
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="empty-state">No messages in this chat.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
